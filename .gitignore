@@ -4,5 +4,6 @@ target/
 *.jar
 node_modules/
 .env
-.idea
-.vscode
+.env.*
+.idea/
+.vscode/
