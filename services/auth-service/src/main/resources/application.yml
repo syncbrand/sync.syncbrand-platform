@@ -15,15 +15,17 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 logging:
   level:
     org.springframework: INFO
-    org.hibernate.SQL: DEBUG
 
 eureka:
   client:
-    enabled: false
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EU_USERNAME}:${EU_PASSWORD}@localhost:8761/eureka
+
+  instance:
+    prefer-ip-address: true
