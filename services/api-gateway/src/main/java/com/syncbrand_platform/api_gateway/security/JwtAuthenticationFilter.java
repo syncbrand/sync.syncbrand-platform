@@ -1,39 +1,79 @@
 package com.syncbrand_platform.api_gateway.security;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.syncbrand_platform.api_gateway.config.RouteValidator;
 
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private final RouteValidator validator;
     private final JwtUtil jwtUtil;
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange,
-                             GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+        String path = exchange.getRequest().getURI().getPath();
+        System.out.println("Gateway Path: " + path);
+
+        log.info("Incoming request -> {}", path);
 
         if (validator.isSecured.test(exchange.getRequest())) {
 
-            if (!exchange.getRequest().getHeaders().containsKey("Authorization")) {
-                throw new RuntimeException("Missing Authorization Header");
+            log.info("Secured endpoint detected");
+
+            String authHeader = exchange.getRequest()
+                    .getHeaders()
+                    .getFirst(HttpHeaders.AUTHORIZATION);
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+                log.error("Missing or invalid Authorization header");
+
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
             }
 
-            String token = exchange.getRequest()
-                    .getHeaders()
-                    .getFirst("Authorization")
-                    .substring(7);
+            String token = authHeader.substring(7);
 
-            jwtUtil.validateToken(token);
+            try {
+
+                jwtUtil.validateToken(token);
+
+                String email = jwtUtil.extractEmail(token);
+                String role = jwtUtil.extractRole(token);
+
+                log.info("Authenticated user -> {}", email);
+
+                exchange = exchange.mutate()
+                        .request(builder -> builder.headers(headers -> {
+
+                            headers.set("X-User-Email", email);
+                            headers.set("X-User-Role", role);
+
+                        }))
+                        .build();
+
+            } catch (Exception e) {
+
+                log.error("JWT validation failed -> {}", e.getMessage());
+
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            }
         }
 
         return chain.filter(exchange);
@@ -41,6 +81,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 2;
+        return -1;
     }
 }

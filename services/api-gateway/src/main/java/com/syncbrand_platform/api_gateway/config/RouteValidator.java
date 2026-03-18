@@ -9,13 +9,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class RouteValidator {
 
-    public static final List<String> openEndpoints = List.of(
-            "/api/auth/login",
-            "/api/auth/register"
+    /**
+     * Public endpoints that should NOT require authentication
+     */
+    private static final List<String> PUBLIC_ENDPOINTS = List.of(
+            "/auth/register",
+            "/auth/login",
+            "/auth-service/auth/register",
+            "/auth-service/auth/login",
+            "/actuator",
+            "/eureka"
     );
 
+    /**
+     * Predicate to check if request requires authentication
+     */
     public Predicate<ServerHttpRequest> isSecured =
-            request -> openEndpoints
-                    .stream()
-                    .noneMatch(uri -> request.getURI().getPath().contains(uri));
+            request -> {
+
+                String path = request.getURI().getPath();
+
+                return PUBLIC_ENDPOINTS
+                        .stream()
+                        .noneMatch(path::contains);
+            };
 }

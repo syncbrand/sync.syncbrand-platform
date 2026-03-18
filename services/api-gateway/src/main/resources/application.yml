@@ -49,7 +49,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway,metrics
+        include: "*"
 
   endpoint:
     health:
@@ -58,3 +58,6 @@ management:
 logging:
   level:
     org.springframework.cloud.gateway: INFO
+
+jwt:
+  secret: ${JWT_SECRET}
