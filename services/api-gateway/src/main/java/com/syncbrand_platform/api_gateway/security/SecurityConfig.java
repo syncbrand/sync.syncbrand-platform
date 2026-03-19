@@ -14,9 +14,13 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth-service/auth/**").permitAll()
+
+                        // Public endpoints
+                        .pathMatchers("/auth/**").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/eureka/**").permitAll()
+
+                        // All other APIs require authentication
                         .anyExchange().authenticated()
                 )
                 .build();
