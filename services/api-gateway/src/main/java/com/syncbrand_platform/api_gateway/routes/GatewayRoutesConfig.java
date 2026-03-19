@@ -9,26 +9,26 @@ import org.springframework.context.annotation.Configuration;
 public class GatewayRoutesConfig {
 
     @Bean
-    public RouteLocator customRoutes(RouteLocatorBuilder builder) {
+public RouteLocator customRoutes(RouteLocatorBuilder builder) {
 
-        return builder.routes()
+    return builder.routes()
 
-            .route("auth-service", r -> r
-                    .path("/api/auth/**")
-                    .uri("lb://AUTH-SERVICE"))
+        .route("auth-service", r -> r
+                .path("/auth/**")
+                .uri("lb://AUTH-SERVICE"))
 
-            .route("user-service", r -> r
-                    .path("/api/users/**")
-                    .uri("lb://USER-SERVICE"))
+        .route("user-service", r -> r
+                .path("/users/**")
+                .uri("lb://USER-SERVICE"))
 
-            .route("lead-service", r -> r
-                    .path("/api/leads/**")
-                    .uri("lb://LEAD-SERVICE"))
+        .route("lead-service", r -> r
+                .path("/leads", "/leads/**")
+                .uri("lb://LEAD-SERVICE"))
 
-            .route("crm-service", r -> r
-                    .path("/api/crm/**")
-                    .uri("lb://CRM-SERVICE"))
+        .route("crm-service", r -> r
+                .path("/crm/**")
+                .uri("lb://CRM-SERVICE"))
 
-            .build();
-    }
+        .build();
+}
 }
