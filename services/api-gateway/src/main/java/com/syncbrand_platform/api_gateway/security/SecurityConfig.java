@@ -13,15 +13,9 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf.disable())
-                .authorizeExchange(exchange -> exchange
-
-                        // Public endpoints
-                        .pathMatchers("/auth/**").permitAll()
-                        .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("/eureka/**").permitAll()
-
-                        // All other APIs require authentication
-                        .anyExchange().authenticated()
+                // Let all requests pass through Spring Security; JWT filter handles auth
+                .authorizeExchange(exchanges -> exchanges
+                        .anyExchange().permitAll()
                 )
                 .build();
     }

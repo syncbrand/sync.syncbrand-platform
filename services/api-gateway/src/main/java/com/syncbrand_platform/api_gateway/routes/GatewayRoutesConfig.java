@@ -22,11 +22,11 @@ public RouteLocator customRoutes(RouteLocatorBuilder builder) {
                 .uri("lb://USER-SERVICE"))
 
         .route("lead-service", r -> r
-                .path("/leads", "/leads/**")
+                .path("/leads/**")
                 .uri("lb://LEAD-SERVICE"))
 
         .route("organization-service", r -> r
-                .path("/organizations", "/organizations/**")
+                .path("/organizations/**")
                 .uri("lb://ORGANIZATION-SERVICE"))
 
         .route("crm-service", r -> r
