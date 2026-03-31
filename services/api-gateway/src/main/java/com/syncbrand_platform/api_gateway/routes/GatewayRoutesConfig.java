@@ -25,6 +25,10 @@ public RouteLocator customRoutes(RouteLocatorBuilder builder) {
                 .path("/leads", "/leads/**")
                 .uri("lb://LEAD-SERVICE"))
 
+        .route("organization-service", r -> r
+                .path("/organizations", "/organizations/**")
+                .uri("lb://ORGANIZATION-SERVICE"))
+
         .route("crm-service", r -> r
                 .path("/crm/**")
                 .uri("lb://CRM-SERVICE"))

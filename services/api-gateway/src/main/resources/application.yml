@@ -10,14 +10,15 @@ spring:
 
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
 
       httpclient:
         connect-timeout: 5000
         response-timeout: 10s
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
 
       default-filters:
         - AddResponseHeader=X-Gateway, SyncBrand-Gateway
@@ -34,6 +35,22 @@ spring:
               - DELETE
               - OPTIONS
             allowedHeaders: "*"
+
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+
+        - id: lead-service
+          uri: lb://lead-service
+          predicates:
+            - Path=/leads/**
+
+        - id: organization-service
+          uri: lb://organization-service
+          predicates:
+            - Path=/api/organizations/**
 
 eureka:
   client:
@@ -57,7 +74,8 @@ management:
 
 logging:
   level:
-    org.springframework.cloud.gateway: INFO
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
 
 jwt:
   secret: ${JWT_SECRET}
