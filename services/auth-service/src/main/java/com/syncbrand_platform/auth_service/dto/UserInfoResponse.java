@@ -2,15 +2,13 @@ package com.syncbrand_platform.auth_service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class AuthResponse {
+public class UserInfoResponse {
 
-    private String token;
     private Long userId;
-    private String role;
     private String name;
-
+    private String email;
+    private String role;
 }

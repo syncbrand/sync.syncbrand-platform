@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 import com.syncbrand_platform.auth_service.dto.AuthResponse;
 import com.syncbrand_platform.auth_service.dto.LoginRequest;
 import com.syncbrand_platform.auth_service.dto.RegisterRequest;
+import com.syncbrand_platform.auth_service.dto.UserInfoResponse;
+import com.syncbrand_platform.auth_service.entity.Role;
 import com.syncbrand_platform.auth_service.entity.User;
-import com.syncbrand_platform.auth_service.exception.InvalidCredentialsException;
 import com.syncbrand_platform.auth_service.repository.UserRepository;
 import com.syncbrand_platform.auth_service.service.AuthService;
 import com.syncbrand_platform.auth_service.util.JwtUtil;
@@ -31,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.DEMO_USER)
                 .active(true)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -40,7 +41,12 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        return new AuthResponse(token);
+        return new AuthResponse(
+                token,
+                user.getId(),
+                user.getRole().name(),
+                user.getName()
+        );
     }
 
     @Override
@@ -50,11 +56,30 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialsException("Invalid credentials");
+            throw new RuntimeException("Invalid credentials");
         }
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 
-        return new AuthResponse(token);
+        return new AuthResponse(
+                token,
+                user.getId(),
+                user.getRole().name(),
+                user.getName()
+        );
     }
+
+    @Override
+        public UserInfoResponse getCurrentUser(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new UserInfoResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+        }
 }
