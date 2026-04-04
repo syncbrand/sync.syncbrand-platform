@@ -1,7 +1,6 @@
 package com.syncbrand_platform.api_gateway.security;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -16,9 +15,9 @@ import org.springframework.web.server.ServerWebExchange;
 
 import com.syncbrand_platform.api_gateway.config.RouteValidator;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

@@ -5,6 +5,6 @@ public enum Role {
     ADMIN,
     MANAGER,
     CLIENT,
-    USER
+    DEMO_USER
 
 }
